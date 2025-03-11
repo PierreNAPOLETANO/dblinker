@@ -29,12 +29,11 @@ class Slave extends ExtendedServer
         } else {
             try {
                 $sss = $this->connection()->query('SHOW SLAVE STATUS')->fetch();
-                if ($sss['Slave_IO_Running'] === 'No' || $sss['Slave_SQL_Running'] === 'No') {
-                    // slave is STOPPED
-                    return $this->setSlaveStatus(false, null);
-                } else {
-                    return $this->setSlaveStatus(true, $sss['Seconds_Behind_Master']);
-                }
+
+                return $sss['Slave_IO_Running'] === 'No' || $sss['Slave_SQL_Running'] === 'No'
+                    ? $this->setSlaveStatus(false, null)
+                    : $this->setSlaveStatus(true, $sss['Seconds_Behind_Master']);
+
             } catch (\Exception $e) {
                 if (stripos($e->getMessage(), 'Access denied') !== false) {
                     return $this->setSlaveStatus(true, 0);
