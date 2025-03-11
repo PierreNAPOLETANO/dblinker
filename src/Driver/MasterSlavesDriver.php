@@ -34,14 +34,11 @@ trait MasterSlavesDriver
 
         if ($cache->hasCache()) {
             $config = $cache->getCacheItem($key);
+            $cache->setCacheItem($key, $config, 60);
         }
 
         if ($config === null) {
             $config = $this->config($configParams, $driverOptions);
-        }
-
-        if ($cache->hasCache()) {
-            $cache->setCacheItem($key, $config, 60);
         }
 
         return new MasterSlavesConnection($config["master"], $config["slaves"], $cache);
